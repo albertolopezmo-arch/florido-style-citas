@@ -95,6 +95,21 @@ function downloadCalendarEvent(booking) {
   setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }
 
+function openGoogleCalendar(booking) {
+  const compactDate = booking.date.replaceAll("-", "");
+  const [hour, minute] = booking.time.split(":").map(Number);
+  const start = `${compactDate}T${String(hour).padStart(2, "0")}${String(minute).padStart(2, "0")}00`;
+  const end = `${compactDate}T${String(hour + 1).padStart(2, "0")}${String(minute).padStart(2, "0")}00`;
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: `Cita en Florido Style · ${booking.service}`,
+    dates: `${start}/${end}`,
+    ctz: "Europe/Madrid",
+    details: "Tu cita en Florido Style. Añade un aviso 3 horas antes si Google Calendar no lo propone automáticamente."
+  });
+  window.open(`https://calendar.google.com/calendar/render?${params}`, "_blank", "noopener");
+}
+
 async function supabaseRpc(name, payload) {
   const response = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/rpc/${name}`, {
     method: "POST",
@@ -257,7 +272,10 @@ calendarNext.addEventListener("click", () => {
 });
 form.elements.service.forEach(input => input.addEventListener("change", updateSummary));
 document.querySelector("#close-dialog").addEventListener("click", () => dialog.close());
-document.querySelector("#add-calendar").addEventListener("click", () => {
+document.querySelector("#add-google-calendar").addEventListener("click", () => {
+  if (latestBooking) openGoogleCalendar(latestBooking);
+});
+document.querySelector("#download-calendar").addEventListener("click", () => {
   if (latestBooking) downloadCalendarEvent(latestBooking);
 });
 

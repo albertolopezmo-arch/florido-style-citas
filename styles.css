@@ -118,6 +118,11 @@ dialog p { color: var(--muted); line-height: 1.6; }
 .success-icon { width: 58px; height: 58px; margin: 0 auto 18px; display: grid; place-items: center; border-radius: 50%; color: #102014; background: var(--success); font-size: 30px; font-weight: 700; }
 .calendar-button { width: 100%; min-height: 54px; margin: 8px 0 10px; color: var(--ink); background: #202723; border: 1px solid var(--accent); border-radius: 14px; cursor: pointer; font-weight: 700; }
 .calendar-button:hover { background: #29332e; }
+.calendar-actions { margin: 8px 0 14px; }
+.calendar-actions .calendar-button { margin: 8px 0 0; }
+.calendar-actions .calendar-button:first-child { color: #101310; background: var(--accent); }
+.calendar-actions .calendar-button:first-child:hover { background: #d5b97f; }
+.calendar-actions small { display: block; margin-top: 9px; color: var(--muted); line-height: 1.45; }
 @media (max-width: 650px) {
   .topbar { min-height: 68px; padding: calc(10px + env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) 10px max(14px, env(safe-area-inset-left)); }
   .open-pill { display: none; }
