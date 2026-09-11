@@ -18,13 +18,24 @@ const dateInput = document.querySelector("#booking-date");
 const slotsNode = document.querySelector("#slots");
 const submitButton = document.querySelector("#submit-button");
 const dialog = document.querySelector("#confirmation-dialog");
+const calendarDays = document.querySelector("#calendar-days");
+const calendarMonth = document.querySelector("#calendar-month");
+const calendarPrev = document.querySelector("#calendar-prev");
+const calendarNext = document.querySelector("#calendar-next");
 let selectedSlot = "";
 
 const isConnected = Boolean(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
 const localKey = "florido-style-demo-bookings";
 const today = new Date();
 const localToday = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-dateInput.min = localToday;
+let calendarCursor = new Date(today.getFullYear(), today.getMonth(), 1);
+
+function dateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 function selectedService() {
   return form.elements.service.value;
@@ -65,6 +76,54 @@ async function getAvailableSlots(dateValue) {
   if (!isConnected) return demoAvailableSlots(dateValue);
   const rows = await supabaseRpc("get_available_slots", { p_date: dateValue });
   return rows.map(row => String(row.slot_time).slice(0, 5));
+}
+
+async function getBlockedDays(start, end) {
+  if (!isConnected) return [];
+  try {
+    const rows = await supabaseRpc("get_blocked_days", { p_start: start, p_end: end });
+    return rows.map(row => row.block_date);
+  } catch {
+    return [];
+  }
+}
+
+async function renderCalendar() {
+  const year = calendarCursor.getFullYear();
+  const month = calendarCursor.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const blockedDays = new Set(await getBlockedDays(dateKey(firstDay), dateKey(lastDay)));
+  calendarMonth.textContent = new Intl.DateTimeFormat("es-ES", { month: "long", year: "numeric" }).format(firstDay);
+  calendarDays.innerHTML = "";
+  const leadingBlanks = (firstDay.getDay() + 6) % 7;
+  for (let i = 0; i < leadingBlanks; i += 1) {
+    const blank = document.createElement("span");
+    blank.className = "calendar-blank";
+    calendarDays.appendChild(blank);
+  }
+  for (let day = 1; day <= lastDay.getDate(); day += 1) {
+    const date = new Date(year, month, day);
+    const key = dateKey(date);
+    const weekend = date.getDay() === 0 || date.getDay() === 6;
+    const unavailable = key < localToday || weekend || blockedDays.has(key);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `calendar-day${blockedDays.has(key) ? " blocked" : ""}${dateInput.value === key ? " selected" : ""}`;
+    button.textContent = day;
+    button.disabled = unavailable;
+    button.setAttribute("aria-label", unavailable ? `${formatDate(key)}, no disponible` : formatDate(key));
+    button.addEventListener("click", () => {
+      dateInput.value = key;
+      calendarDays.querySelectorAll(".calendar-day").forEach(item => item.classList.remove("selected"));
+      button.classList.add("selected");
+      refreshSlots();
+    });
+    calendarDays.appendChild(button);
+  }
+  const currentMonth = today.getFullYear() * 12 + today.getMonth();
+  const shownMonth = year * 12 + month;
+  calendarPrev.disabled = shownMonth <= currentMonth;
 }
 
 function updateSummary() {
@@ -133,6 +192,14 @@ async function createBooking(booking) {
 }
 
 dateInput.addEventListener("change", refreshSlots);
+calendarPrev.addEventListener("click", () => {
+  calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth() - 1, 1);
+  renderCalendar();
+});
+calendarNext.addEventListener("click", () => {
+  calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth() + 1, 1);
+  renderCalendar();
+});
 form.elements.service.forEach(input => input.addEventListener("change", updateSummary));
 document.querySelector("#close-dialog").addEventListener("click", () => dialog.close());
 
@@ -168,10 +235,10 @@ form.addEventListener("submit", async event => {
     dialog.showModal();
     form.reset();
     form.elements.service[0].checked = true;
-    dateInput.min = localToday;
     selectedSlot = "";
     slotsNode.innerHTML = '<p class="empty-state">Selecciona primero un día para consultar las horas disponibles.</p>';
     updateSummary();
+    renderCalendar();
   } catch {
     errorNode.textContent = "Esa hora ya no está disponible o no hemos podido guardar la cita. Elige otra hora.";
     await refreshSlots();
@@ -182,6 +249,7 @@ form.addEventListener("submit", async event => {
 });
 
 updateSummary();
+renderCalendar();
 
 function registerBookingTool() {
   const context = document.modelContext;

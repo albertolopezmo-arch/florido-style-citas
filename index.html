@@ -58,10 +58,16 @@
 
         <fieldset>
           <legend><span>2</span> Elige el día</legend>
-          <label class="date-control">
-            <span>Fecha de la cita</span>
-            <input id="booking-date" type="date" required>
-          </label>
+          <div class="booking-calendar" aria-label="Calendario de citas">
+            <div class="calendar-heading">
+              <button id="calendar-prev" type="button" aria-label="Mes anterior">‹</button>
+              <strong id="calendar-month"></strong>
+              <button id="calendar-next" type="button" aria-label="Mes siguiente">›</button>
+            </div>
+            <div class="calendar-weekdays" aria-hidden="true"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+            <div id="calendar-days" class="calendar-days" aria-live="polite"></div>
+            <input id="booking-date" type="hidden" required>
+          </div>
           <p class="hint">Abrimos de lunes a viernes.</p>
           <p id="date-error" class="error" role="alert"></p>
         </fieldset>

@@ -107,6 +107,22 @@ $$;
 revoke all on function public.get_available_slots(date) from public;
 grant execute on function public.get_available_slots(date) to anon, authenticated;
 
+create or replace function public.get_blocked_days(p_start date, p_end date)
+returns table(block_date date)
+language sql
+security definer
+set search_path = public
+as $$
+  select b.block_date
+  from public.blocked_slots b
+  where b.block_time is null
+    and b.block_date between p_start and p_end
+  order by b.block_date;
+$$;
+
+revoke all on function public.get_blocked_days(date, date) from public;
+grant execute on function public.get_blocked_days(date, date) to anon, authenticated;
+
 -- DESPUÉS de crear el usuario en Authentication, ejecuta una sola vez:
 -- insert into public.admin_users(email)
 -- values ('correo-del-peluquero@ejemplo.com')

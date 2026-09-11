@@ -62,6 +62,19 @@ label > span:first-child, .date-control > span { display: block; margin-bottom: 
 input[type="date"], input[type="text"], input[type="tel"], input:not([type]) { width: 100%; min-width: 0; max-width: 100%; min-height: 52px; padding: 0 14px; color: var(--ink); background: #0e1311; border: 1px solid var(--line); border-radius: 12px; outline: none; font-size: 16px; }
 input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(199,167,106,.12); }
 .date-control { display: block; max-width: 360px; }
+.booking-calendar { width: min(100%, 430px); padding: 16px; border: 1px solid var(--line); border-radius: 18px; background: #0e1311; }
+.calendar-heading { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px; margin-bottom: 14px; }
+.calendar-heading strong { text-align: center; text-transform: capitalize; font-size: 16px; }
+.calendar-heading button { width: 44px; height: 44px; color: var(--accent); background: #171d1a; border: 1px solid var(--line); border-radius: 11px; cursor: pointer; font-size: 27px; }
+.calendar-heading button:disabled { opacity: .25; cursor: default; }
+.calendar-weekdays, .calendar-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+.calendar-weekdays { margin-bottom: 6px; color: var(--muted); text-align: center; font-size: 12px; font-weight: 700; }
+.calendar-day { aspect-ratio: 1; min-width: 0; display: grid; place-items: center; padding: 0; color: var(--ink); background: transparent; border: 1px solid transparent; border-radius: 10px; cursor: pointer; }
+.calendar-day:hover:not(:disabled) { border-color: var(--accent); }
+.calendar-day.selected { color: #111511; background: var(--accent); font-weight: 700; }
+.calendar-day:disabled { color: #59605c; background: rgba(255,255,255,.025); cursor: not-allowed; text-decoration: line-through; }
+.calendar-day.blocked:disabled { color: #777d79; background: rgba(255,255,255,.055); }
+.calendar-blank { aspect-ratio: 1; }
 .hint { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
 .slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .slot { min-height: 50px; color: var(--ink); background: #0e1311; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; font-size: 16px; }
@@ -112,6 +125,7 @@ dialog p { color: var(--muted); line-height: 1.6; }
   fieldset { padding: 24px 0; }
   legend { font-size: 16px; line-height: 1.4; }
   .service-grid, .details-grid { grid-template-columns: 1fr; }
+  .booking-calendar { width: 100%; padding: 12px; }
   .service-card { min-height: 78px; }
   .slots { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .summary { padding: 18px; margin-top: 24px; }
