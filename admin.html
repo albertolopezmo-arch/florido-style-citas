@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101413">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Agenda privada · Florido Style</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+  <header class="topbar admin-topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">FS</span><span><strong>Florido Style</strong><small>AGENDA PRIVADA</small></span></a>
+    <button id="logout-button" class="ghost-button" type="button" hidden>Cerrar sesión</button>
+  </header>
+
+  <main class="admin-main">
+    <section id="login-view" class="login-card">
+      <p class="eyebrow">ACCESO PRIVADO</p>
+      <h1>Agenda del peluquero</h1>
+      <p>Inicia sesión para consultar clientes y gestionar las horas disponibles.</p>
+      <form id="login-form">
+        <label><span>Correo</span><input id="admin-email" type="email" autocomplete="username" required></label>
+        <label><span>Contraseña</span><input id="admin-password" type="password" autocomplete="current-password" required></label>
+        <p id="login-error" class="error" role="alert"></p>
+        <button class="primary-button" type="submit">Entrar en la agenda</button>
+      </form>
+    </section>
+
+    <section id="dashboard-view" hidden>
+      <div class="dashboard-heading">
+        <div><p class="eyebrow">PANEL PRIVADO</p><h1>Agenda</h1><p id="day-label"></p></div>
+        <label class="admin-date"><span>Consultar fecha</span><input id="admin-date" type="date"></label>
+      </div>
+
+      <div class="stats-grid">
+        <article><small>Citas confirmadas</small><strong id="confirmed-count">0</strong></article>
+        <article><small>Huecos disponibles</small><strong id="available-count">0</strong></article>
+        <article><small>Ingresos previstos</small><strong id="revenue-count">0 €</strong></article>
+      </div>
+
+      <div class="admin-grid">
+        <section class="admin-panel">
+          <div class="panel-heading"><div><p class="eyebrow">CLIENTES</p><h2>Citas del día</h2></div><button id="refresh-button" class="ghost-button" type="button">Actualizar</button></div>
+          <div id="appointments-list" class="appointment-list" aria-live="polite"></div>
+        </section>
+
+        <aside class="admin-panel block-panel">
+          <p class="eyebrow">BLOQUEAR AGENDA</p>
+          <h2>Cerrar disponibilidad</h2>
+          <p>Bloquea todo el día o una hora concreta. Las citas que ya existan no se cancelarán.</p>
+          <form id="block-form">
+            <label><span>Qué quieres bloquear</span>
+              <select id="block-time">
+                <option value="">Día completo</option>
+                <option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option>
+                <option>16:00</option><option>17:00</option><option>18:00</option>
+              </select>
+            </label>
+            <label><span>Motivo opcional</span><input id="block-reason" maxlength="80" placeholder="Vacaciones, asunto personal…"></label>
+            <p id="block-error" class="error" role="alert"></p>
+            <button class="danger-button" type="submit">Bloquear agenda</button>
+          </form>
+          <div class="active-blocks"><h3>Bloqueos de este día</h3><div id="blocks-list"></div></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="cancel-dialog">
+    <p class="eyebrow">CANCELAR CITA</p>
+    <h2>¿Cancelar esta cita?</h2>
+    <p id="cancel-text"></p>
+    <div class="dialog-actions"><button id="dismiss-cancel" class="ghost-button" type="button">Volver</button><button id="confirm-cancel" class="danger-button" type="button">Sí, cancelar</button></div>
+  </dialog>
+
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

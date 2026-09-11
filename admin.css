@@ -1,0 +1,54 @@
+.admin-body { background: radial-gradient(circle at 12% 8%, #29352f 0, transparent 24rem), var(--bg); }
+.ghost-button, .danger-button { min-height: 46px; padding: 0 16px; border-radius: 12px; cursor: pointer; font-weight: 700; }
+.ghost-button { color: var(--ink); background: transparent; border: 1px solid var(--line); }
+.danger-button { width: 100%; color: #fff; background: #a33d3d; border: 0; }
+.admin-main { padding-top: 44px; padding-bottom: 70px; }
+.login-card { width: min(500px, 100%); margin: 5vh auto; padding: 34px; border: 1px solid var(--line); border-radius: 24px; background: var(--panel); }
+.login-card h1, .dashboard-heading h1 { margin: 0; font: 700 clamp(38px, 6vw, 62px) "Playfair Display"; }
+.login-card > p:not(.eyebrow), .dashboard-heading > div > p:last-child, .block-panel > p { color: var(--muted); line-height: 1.55; }
+.login-card form { padding: 16px 0 0; }
+.login-card label { display: block; margin-bottom: 16px; }
+.login-card label span, .admin-date span, .block-panel label span { display: block; margin-bottom: 7px; color: var(--muted); font-size: 14px; font-weight: 600; }
+.dashboard-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 26px; }
+.admin-date { width: min(300px, 100%); }
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+.stats-grid article { padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); }
+.stats-grid small, .stats-grid strong { display: block; }
+.stats-grid small { color: var(--muted); }
+.stats-grid strong { margin-top: 8px; color: var(--accent); font: 700 32px "Playfair Display"; }
+.admin-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, .8fr); gap: 18px; align-items: start; }
+.admin-panel { padding: 24px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); }
+.admin-panel h2 { margin: 0; font: 700 27px "Playfair Display"; }
+.panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+.appointment-list { display: grid; gap: 10px; }
+.appointment { display: grid; grid-template-columns: 74px 1fr auto; gap: 14px; align-items: center; padding: 16px; border: 1px solid var(--line); border-radius: 15px; background: #101512; }
+.appointment-time { color: var(--accent); font-size: 20px; font-weight: 700; }
+.appointment strong, .appointment span { display: block; }
+.appointment span { margin-top: 4px; color: var(--muted); font-size: 14px; }
+.cancel-button { min-height: 42px; padding: 0 13px; color: #ffaaa6; background: transparent; border: 1px solid #633b3b; border-radius: 10px; cursor: pointer; }
+.empty-admin { padding: 35px 15px; color: var(--muted); text-align: center; border: 1px dashed var(--line); border-radius: 14px; }
+.block-panel form { padding: 12px 0 18px; }
+.block-panel label { display: block; margin-bottom: 14px; }
+.block-panel select { width: 100%; min-height: 52px; padding: 0 13px; color: var(--ink); background: #0e1311; border: 1px solid var(--line); border-radius: 12px; font-size: 16px; }
+.active-blocks { padding-top: 18px; border-top: 1px solid var(--line); }
+.active-blocks h3 { font-size: 15px; }
+.block-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.block-row span { font-size: 14px; }
+.unblock-button { color: var(--accent); background: transparent; border: 0; cursor: pointer; text-decoration: underline; }
+.dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+@media (max-width: 800px) {
+  .admin-main { padding-top: 28px; }
+  .dashboard-heading { display: grid; align-items: initial; }
+  .admin-date { width: 100%; }
+  .admin-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .admin-main { width: calc(100% - 16px); }
+  .login-card, .admin-panel { padding: 20px 16px; border-radius: 18px; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .stats-grid article { display: flex; align-items: center; justify-content: space-between; padding: 16px; }
+  .stats-grid strong { margin-top: 0; font-size: 26px; }
+  .appointment { grid-template-columns: 60px 1fr; }
+  .cancel-button { grid-column: 1 / -1; width: 100%; }
+  .dialog-actions { grid-template-columns: 1fr; }
+}

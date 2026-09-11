@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101413">
+  <meta name="description" content="Reserva online tu cita en Florido Style.">
+  <title>Florido Style · Reserva tu cita</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Florido Style, inicio">
+      <span class="brand-mark" aria-hidden="true">FS</span>
+      <span><strong>Florido Style</strong><small>PELUQUERÍA</small></span>
+    </a>
+    <div class="open-pill"><span></span> Citas de lunes a viernes</div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="eyebrow">RESERVA ONLINE</p>
+      <h1>Tu próximo corte,<br><em>a un par de clics.</em></h1>
+      <p>Elige servicio, día y hora. Confirmaremos tu cita al instante.</p>
+    </section>
+
+    <section class="booking-card" aria-labelledby="booking-title">
+      <div class="card-heading">
+        <div><span>AGENDA</span><h2 id="booking-title">Reserva tu cita</h2></div>
+        <div class="price">15 €<small>por cita</small></div>
+      </div>
+
+      <form id="booking-form" novalidate>
+        <fieldset>
+          <legend><span>1</span> Elige el servicio</legend>
+          <div class="service-grid">
+            <label class="service-card">
+              <input type="radio" name="service" value="Corte de pelo" checked>
+              <span class="service-icon" aria-hidden="true">✂</span>
+              <span><strong>Corte de pelo</strong><small>60 minutos · 15 €</small></span>
+              <i aria-hidden="true"></i>
+            </label>
+            <label class="service-card">
+              <input type="radio" name="service" value="Corte de pelo y barba">
+              <span class="service-icon" aria-hidden="true">♢</span>
+              <span><strong>Corte de pelo y barba</strong><small>60 minutos · 15 €</small></span>
+              <i aria-hidden="true"></i>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span>2</span> Elige el día</legend>
+          <label class="date-control">
+            <span>Fecha de la cita</span>
+            <input id="booking-date" type="date" required>
+          </label>
+          <p class="hint">Abrimos de lunes a viernes.</p>
+          <p id="date-error" class="error" role="alert"></p>
+        </fieldset>
+
+        <fieldset>
+          <legend><span>3</span> Elige la hora</legend>
+          <div id="slots" class="slots" aria-live="polite">
+            <p class="empty-state">Selecciona primero un día para consultar las horas disponibles.</p>
+          </div>
+          <p id="slot-error" class="error" role="alert"></p>
+        </fieldset>
+
+        <fieldset>
+          <legend><span>4</span> Tus datos</legend>
+          <div class="details-grid">
+            <label><span>Nombre</span><input id="customer-name" autocomplete="name" maxlength="60" placeholder="Tu nombre" required></label>
+            <label><span>Teléfono</span><input id="customer-phone" type="tel" autocomplete="tel" maxlength="20" placeholder="600 000 000" required></label>
+          </div>
+          <label class="privacy-check">
+            <input id="privacy-check" type="checkbox" required>
+            <span>Acepto que mis datos se utilicen únicamente para gestionar la cita. <a href="privacy.html" target="_blank">Ver privacidad</a>.</span>
+          </label>
+          <p id="form-error" class="error" role="alert"></p>
+        </fieldset>
+
+        <div class="summary" id="summary">
+          <div><small>TU CITA</small><strong id="summary-service">Corte de pelo</strong><span id="summary-when">Selecciona día y hora</span></div>
+          <strong>15 €</strong>
+        </div>
+        <button class="primary-button" id="submit-button" type="submit">Confirmar cita <span>→</span></button>
+      </form>
+    </section>
+
+    <section class="hours" aria-label="Horario">
+      <div><span>HORARIO</span><strong>Lunes a viernes</strong></div>
+      <div><strong>10:00–14:00</strong><small>Mañanas</small></div>
+      <div><strong>16:00–19:00</strong><small>Tardes</small></div>
+    </section>
+  </main>
+
+  <footer><strong>Florido Style</strong><span>Reserva fácil. Estilo a tu manera.</span><a href="admin.html">Acceso profesional</a></footer>
+
+  <dialog id="confirmation-dialog">
+    <div class="success-icon">✓</div>
+    <p class="eyebrow">CITA CONFIRMADA</p>
+    <h2>¡Te esperamos!</h2>
+    <p id="confirmation-text"></p>
+    <button id="close-dialog" class="primary-button" type="button">Entendido</button>
+  </dialog>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
