@@ -84,7 +84,18 @@ async function getBlockedDays(start, end) {
     const rows = await supabaseRpc("get_blocked_days", { p_start: start, p_end: end });
     return rows.map(row => row.block_date);
   } catch {
-    return [];
+    const startDate = new Date(`${start}T12:00:00`);
+    const endDate = new Date(`${end}T12:00:00`);
+    const weekdays = [];
+    for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+      const key = dateKey(date);
+      if (key >= localToday && date.getDay() !== 0 && date.getDay() !== 6) weekdays.push(key);
+    }
+    const availability = await Promise.all(weekdays.map(async key => {
+      try { return (await getAvailableSlots(key)).length ? null : key; }
+      catch { return null; }
+    }));
+    return availability.filter(Boolean);
   }
 }
 
