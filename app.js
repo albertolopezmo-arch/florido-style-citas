@@ -6,11 +6,11 @@ function closeWelcome() {
   if (!welcomeSplash || welcomeSplash.classList.contains("closing")) return;
   clearTimeout(welcomeTimer);
   welcomeSplash.classList.add("closing");
-  setTimeout(() => welcomeSplash.remove(), 600);
+  setTimeout(() => welcomeSplash.remove(), 850);
 }
 
 if (welcomeSplash) {
-  welcomeTimer = setTimeout(closeWelcome, 5000);
+  welcomeTimer = setTimeout(closeWelcome, 2000);
 }
 const SLOTS = ["10:00", "11:00", "12:00", "13:00", "16:00", "17:00", "18:00"];
 const form = document.querySelector("#booking-form");
