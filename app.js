@@ -23,6 +23,7 @@ const calendarMonth = document.querySelector("#calendar-month");
 const calendarPrev = document.querySelector("#calendar-prev");
 const calendarNext = document.querySelector("#calendar-next");
 let selectedSlot = "";
+let latestBooking = null;
 
 const isConnected = Boolean(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
 const localKey = "florido-style-demo-bookings";
@@ -49,6 +50,49 @@ function isWeekday(dateValue) {
 function formatDate(dateValue) {
   return new Intl.DateTimeFormat("es-ES", { weekday: "long", day: "numeric", month: "long" })
     .format(new Date(`${dateValue}T12:00:00`));
+}
+
+function escapeCalendarText(value) {
+  return String(value).replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
+}
+
+function downloadCalendarEvent(booking) {
+  const compactDate = booking.date.replaceAll("-", "");
+  const [hour, minute] = booking.time.split(":").map(Number);
+  const start = `${compactDate}T${String(hour).padStart(2, "0")}${String(minute).padStart(2, "0")}00`;
+  const end = `${compactDate}T${String(hour + 1).padStart(2, "0")}${String(minute).padStart(2, "0")}00`;
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Florido Style//Citas//ES",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "X-WR-TIMEZONE:Europe/Madrid",
+    "BEGIN:VEVENT",
+    `UID:${crypto.randomUUID()}@floridostyle`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART;TZID=Europe/Madrid:${start}`,
+    `DTEND;TZID=Europe/Madrid:${end}`,
+    `SUMMARY:${escapeCalendarText(`Cita en Florido Style · ${booking.service}`)}`,
+    `DESCRIPTION:${escapeCalendarText("Tu cita en Florido Style. Si no puedes asistir, contacta con la peluquería.")}`,
+    "STATUS:CONFIRMED",
+    "BEGIN:VALARM",
+    "TRIGGER:-PT3H",
+    "ACTION:DISPLAY",
+    "DESCRIPTION:Recordatorio de tu cita en Florido Style",
+    "END:VALARM",
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ];
+  const file = new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(file);
+  link.download = `cita-florido-style-${booking.date}-${booking.time.replace(":", "")}.ics`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }
 
 async function supabaseRpc(name, payload) {
@@ -213,6 +257,9 @@ calendarNext.addEventListener("click", () => {
 });
 form.elements.service.forEach(input => input.addEventListener("change", updateSummary));
 document.querySelector("#close-dialog").addEventListener("click", () => dialog.close());
+document.querySelector("#add-calendar").addEventListener("click", () => {
+  if (latestBooking) downloadCalendarEvent(latestBooking);
+});
 
 form.addEventListener("submit", async event => {
   event.preventDefault();
@@ -241,6 +288,7 @@ form.addEventListener("submit", async event => {
   submitButton.textContent = "Confirmando…";
   try {
     await createBooking(booking);
+    latestBooking = booking;
     document.querySelector("#confirmation-text").textContent =
       `${booking.name}, tu ${booking.service.toLowerCase()} está reservado para el ${formatDate(booking.date)} a las ${booking.time}.`;
     dialog.showModal();
@@ -294,6 +342,7 @@ function registerBookingTool() {
         date: input.date, time: input.time
       };
       await createBooking(booking);
+      latestBooking = booking;
       document.querySelector("#confirmation-text").textContent =
         `${booking.name}, tu ${booking.service.toLowerCase()} está reservado para el ${formatDate(booking.date)} a las ${booking.time}.`;
       dialog.showModal();
