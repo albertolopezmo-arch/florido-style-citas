@@ -1,8 +1,10 @@
 .admin-body { background: radial-gradient(circle at 12% 8%, #29352f 0, transparent 24rem), var(--bg); }
 .admin-topbar .brand-logo { width: clamp(190px, 24vw, 270px); }
-.ghost-button, .danger-button { min-height: 46px; padding: 0 16px; border-radius: 12px; cursor: pointer; font-weight: 700; }
+.ghost-button, .danger-button, .manual-button { min-height: 46px; padding: 0 16px; border-radius: 12px; cursor: pointer; font-weight: 700; }
 .ghost-button { color: var(--ink); background: transparent; border: 1px solid var(--line); }
 .danger-button { width: 100%; color: #fff; background: #a33d3d; border: 0; }
+.manual-button { width: 100%; color: #07130b; background: #77cf8d; border: 0; }
+.manual-button:hover { background: #91dfa3; }
 .admin-main { padding-top: 44px; padding-bottom: 70px; }
 .login-card { width: min(500px, 100%); margin: 5vh auto; padding: 34px; border: 1px solid var(--line); border-radius: 24px; background: var(--panel); }
 .login-card h1, .dashboard-heading h1 { margin: 0; font: 700 clamp(38px, 6vw, 62px) "Playfair Display"; }
@@ -29,14 +31,22 @@
 .cancel-button { min-height: 42px; padding: 0 13px; color: #ffaaa6; background: transparent; border: 1px solid #633b3b; border-radius: 10px; cursor: pointer; }
 .empty-admin { padding: 35px 15px; color: var(--muted); text-align: center; border: 1px dashed var(--line); border-radius: 14px; }
 .block-panel form { padding: 12px 0 18px; }
+.block-panel > .manual-button { margin-bottom: 20px; }
 .block-panel label { display: block; margin-bottom: 14px; }
 .block-panel select { width: 100%; min-height: 52px; padding: 0 13px; color: var(--ink); background: #0e1311; border: 1px solid var(--line); border-radius: 12px; font-size: 16px; }
 .active-blocks { padding-top: 18px; border-top: 1px solid var(--line); }
 .active-blocks h3 { font-size: 15px; }
 .block-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
 .block-row span { font-size: 14px; }
-.unblock-button { color: var(--accent); background: transparent; border: 0; cursor: pointer; text-decoration: underline; }
+.unblock-button { min-height: 38px; padding: 0 13px; color: #102015; background: #8fcf9d; border: 0; border-radius: 10px; cursor: pointer; font-weight: 700; white-space: nowrap; }
+.unblock-button:hover { background: #a8ddb3; }
 .dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+.manual-form { padding: 8px 0 0; text-align: left; }
+.manual-form label { display: block; margin-top: 14px; }
+.manual-form label > span { display: block; margin-bottom: 7px; color: var(--muted); font-size: 14px; font-weight: 600; }
+.manual-form label small { font-weight: 400; }
+.manual-form select { width: 100%; min-height: 52px; padding: 0 13px; color: var(--ink); background: #0e1311; border: 1px solid var(--line); border-radius: 12px; font-size: 16px; }
+.manual-form .dialog-actions { padding: 0; }
 @media (max-width: 800px) {
   .admin-main { padding-top: 28px; }
   .dashboard-heading { display: grid; align-items: initial; }

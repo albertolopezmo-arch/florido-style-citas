@@ -45,11 +45,15 @@ drop policy if exists "Florido admin updates appointments" on public.appointment
 create policy "Florido admin updates appointments" on public.appointments
 for update to authenticated using (public.is_florido_admin()) with check (public.is_florido_admin());
 
+drop policy if exists "Florido admin creates appointments" on public.appointments;
+create policy "Florido admin creates appointments" on public.appointments
+for insert to authenticated with check (public.is_florido_admin());
+
 drop policy if exists "Florido admin manages blocks" on public.blocked_slots;
 create policy "Florido admin manages blocks" on public.blocked_slots
 for all to authenticated using (public.is_florido_admin()) with check (public.is_florido_admin());
 
-grant select, update on public.appointments to authenticated;
+grant select, insert, update on public.appointments to authenticated;
 grant select, insert, delete on public.blocked_slots to authenticated;
 
 create or replace function public.prevent_booking_on_blocked_slot()

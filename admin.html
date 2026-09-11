@@ -65,6 +65,7 @@
             <p id="block-error" class="error" role="alert"></p>
             <button class="danger-button" type="submit">Bloquear agenda</button>
           </form>
+          <button id="open-manual-booking" class="manual-button" type="button">＋ Añadir cita manual</button>
           <div class="active-blocks"><h3>Bloqueos de este día</h3><div id="blocks-list"></div></div>
         </aside>
       </div>
@@ -76,6 +77,25 @@
     <h2>¿Cancelar esta cita?</h2>
     <p id="cancel-text"></p>
     <div class="dialog-actions"><button id="dismiss-cancel" class="ghost-button" type="button">Volver</button><button id="confirm-cancel" class="danger-button" type="button">Sí, cancelar</button></div>
+  </dialog>
+
+  <dialog id="manual-booking-dialog">
+    <p class="eyebrow">NUEVA CITA</p>
+    <h2>Añadir cita manual</h2>
+    <p id="manual-date-label"></p>
+    <form id="manual-booking-form" class="manual-form">
+      <label><span>Nombre</span><input id="manual-name" maxlength="60" autocomplete="off" placeholder="Nombre del cliente" required></label>
+      <label><span>Teléfono <small>(opcional)</small></span><input id="manual-phone" type="tel" maxlength="20" autocomplete="off" placeholder="Sin teléfono"></label>
+      <label><span>Servicio</span>
+        <select id="manual-service" required>
+          <option value="Corte de pelo">Corte de pelo</option>
+          <option value="Corte de pelo y barba">Corte de pelo y barba</option>
+        </select>
+      </label>
+      <label><span>Hora disponible</span><select id="manual-time" required></select></label>
+      <p id="manual-error" class="error" role="alert"></p>
+      <div class="dialog-actions"><button id="dismiss-manual" class="ghost-button" type="button">Cancelar</button><button id="save-manual" class="manual-button" type="submit">Guardar cita</button></div>
+    </form>
   </dialog>
 
   <script src="config.js"></script>

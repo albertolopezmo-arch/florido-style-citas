@@ -152,6 +152,78 @@ document.querySelector("#block-form").addEventListener("submit", async event => 
   } catch { error.textContent = "Ese día o esa hora ya están bloqueados."; }
 });
 
+const manualDialog = document.querySelector("#manual-booking-dialog");
+const manualForm = document.querySelector("#manual-booking-form");
+const manualTime = document.querySelector("#manual-time");
+const saveManual = document.querySelector("#save-manual");
+
+document.querySelector("#open-manual-booking").addEventListener("click", async () => {
+  const date = dateField.value || todayValue;
+  document.querySelector("#manual-date-label").textContent = `Cita para el ${prettyDate(date)}`;
+  document.querySelector("#manual-error").textContent = "";
+  manualForm.reset();
+  manualTime.innerHTML = '<option value="">Consultando horas…</option>';
+  manualTime.disabled = true;
+  saveManual.disabled = true;
+  manualDialog.showModal();
+  try {
+    const slots = await request(`${apiBase}/rpc/get_available_slots`, {
+      method: "POST", headers: authHeaders(), body: JSON.stringify({ p_date: date })
+    });
+    manualTime.innerHTML = "";
+    if (!slots.length) {
+      manualTime.innerHTML = '<option value="">No quedan horas disponibles</option>';
+      document.querySelector("#manual-error").textContent = "Elige otro día antes de añadir la cita.";
+      return;
+    }
+    slots.forEach(item => {
+      const time = String(item.slot_time).slice(0, 5);
+      const option = document.createElement("option");
+      option.value = `${time}:00`;
+      option.textContent = time;
+      manualTime.appendChild(option);
+    });
+    manualTime.disabled = false;
+    saveManual.disabled = false;
+  } catch {
+    manualTime.innerHTML = '<option value="">No se pudieron consultar las horas</option>';
+    document.querySelector("#manual-error").textContent = "Actualiza la agenda e inténtalo otra vez.";
+  }
+});
+
+document.querySelector("#dismiss-manual").addEventListener("click", () => manualDialog.close());
+
+manualForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  const error = document.querySelector("#manual-error");
+  error.textContent = "";
+  const name = document.querySelector("#manual-name").value.trim();
+  const phone = document.querySelector("#manual-phone").value.trim() || "Sin teléfono";
+  if (name.length < 2 || !manualTime.value) return;
+  saveManual.disabled = true;
+  try {
+    await request(`${apiBase}/appointments`, {
+      method: "POST",
+      headers: authHeaders({ Prefer: "return=minimal" }),
+      body: JSON.stringify({
+        customer_name: name,
+        phone,
+        service: document.querySelector("#manual-service").value,
+        appointment_date: dateField.value,
+        appointment_time: manualTime.value,
+        price_eur: 15,
+        status: "confirmed"
+      })
+    });
+    manualDialog.close();
+    await loadDay();
+  } catch {
+    error.textContent = "No se pudo guardar. Comprueba que la hora siga libre y que el nombre sea correcto.";
+  } finally {
+    saveManual.disabled = false;
+  }
+});
+
 function renderBlocks(items) {
   const list = document.querySelector("#blocks-list");
   if (!items.length) { list.innerHTML = '<p class="hint">No hay bloqueos.</p>'; return; }
