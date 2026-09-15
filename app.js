@@ -24,6 +24,7 @@ const calendarPrev = document.querySelector("#calendar-prev");
 const calendarNext = document.querySelector("#calendar-next");
 let selectedSlot = "";
 let latestBooking = null;
+let availableServices = [];
 
 const isConnected = Boolean(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
 const localKey = "florido-style-demo-bookings";
@@ -39,7 +40,11 @@ function dateKey(date) {
 }
 
 function selectedService() {
-  return form.elements.service.value;
+  return form.querySelector('input[name="service"]:checked')?.value || "";
+}
+
+function selectedServiceData() {
+  return availableServices.find(item => item.name === selectedService()) || null;
 }
 
 function isWeekday(dateValue) {
@@ -137,6 +142,49 @@ async function getAvailableSlots(dateValue) {
   return rows.map(row => String(row.slot_time).slice(0, 5));
 }
 
+async function getServices() {
+  if (!isConnected) return [
+    { name: "Corte de pelo", price_eur: 15, duration_minutes: 60 },
+    { name: "Corte de pelo y barba", price_eur: 15, duration_minutes: 60 }
+  ];
+  return supabaseRpc("get_florido_services", {});
+}
+
+function money(value) {
+  return `${Number(value).toFixed(2).replace(".00", "")} €`;
+}
+
+function renderServices() {
+  const grid = document.querySelector("#service-grid");
+  grid.innerHTML = "";
+  availableServices.forEach((service, index) => {
+    const label = document.createElement("label");
+    label.className = "service-card";
+    label.innerHTML = `<input type="radio" name="service"><span class="service-icon" aria-hidden="true">✂</span><span><strong></strong><small></small></span><i aria-hidden="true"></i>`;
+    const input = label.querySelector("input");
+    input.value = service.name;
+    input.checked = index === 0;
+    label.querySelector("strong").textContent = service.name;
+    label.querySelector("small").textContent = `${service.duration_minutes} minutos · ${money(service.price_eur)}`;
+    input.addEventListener("change", updateSummary);
+    grid.appendChild(label);
+  });
+  const prices = availableServices.map(item => Number(item.price_eur));
+  document.querySelector("#headline-price").firstChild.textContent = prices.length ? `Desde ${money(Math.min(...prices))}` : "Consultar";
+  updateSummary();
+}
+
+async function loadServices() {
+  try {
+    availableServices = await getServices();
+    if (!availableServices.length) throw new Error("Sin servicios");
+    renderServices();
+  } catch {
+    document.querySelector("#service-grid").innerHTML = '<p class="empty-state">No se pudieron cargar los servicios. Actualiza la página.</p>';
+    submitButton.disabled = true;
+  }
+}
+
 async function getBlockedDays(start, end) {
   if (!isConnected) return [];
   try {
@@ -197,7 +245,9 @@ async function renderCalendar() {
 }
 
 function updateSummary() {
-  document.querySelector("#summary-service").textContent = selectedService();
+  const service = selectedServiceData();
+  document.querySelector("#summary-service").textContent = service?.name || "Selecciona un servicio";
+  document.querySelector("#summary-price").textContent = service ? money(service.price_eur) : "—";
   document.querySelector("#summary-when").textContent = dateInput.value && selectedSlot
     ? `${formatDate(dateInput.value)} · ${selectedSlot}`
     : "Selecciona día y hora";
@@ -270,7 +320,6 @@ calendarNext.addEventListener("click", () => {
   calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth() + 1, 1);
   renderCalendar();
 });
-form.elements.service.forEach(input => input.addEventListener("change", updateSummary));
 document.querySelector("#close-dialog").addEventListener("click", () => dialog.close());
 document.querySelector("#add-google-calendar").addEventListener("click", () => {
   if (latestBooking) openGoogleCalendar(latestBooking);
@@ -311,7 +360,8 @@ form.addEventListener("submit", async event => {
       `${booking.name}, tu ${booking.service.toLowerCase()} está reservado para el ${formatDate(booking.date)} a las ${booking.time}.`;
     dialog.showModal();
     form.reset();
-    form.elements.service[0].checked = true;
+    const firstService = form.querySelector('input[name="service"]');
+    if (firstService) firstService.checked = true;
     selectedSlot = "";
     slotsNode.innerHTML = '<p class="empty-state">Selecciona primero un día para consultar las horas disponibles.</p>';
     updateSummary();
@@ -325,13 +375,12 @@ form.addEventListener("submit", async event => {
   }
 });
 
-updateSummary();
+loadServices();
 renderCalendar();
 
 function registerBookingTool() {
   const context = document.modelContext;
   if (!context?.registerTool) return;
-  const allowedServices = ["Corte de pelo", "Corte de pelo y barba"];
   Promise.resolve(context.registerTool({
     name: "create_florido_style_booking",
     title: "Reservar cita en Florido Style",
@@ -341,7 +390,7 @@ function registerBookingTool() {
       properties: {
         customerName: { type: "string", minLength: 2, maxLength: 60 },
         phone: { type: "string", minLength: 6, maxLength: 20 },
-        service: { type: "string", enum: allowedServices },
+        service: { type: "string", description: "Nombre exacto de uno de los servicios activos" },
         date: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$" },
         time: { type: "string", enum: SLOTS }
       },
@@ -350,7 +399,7 @@ function registerBookingTool() {
     },
     annotations: { readOnlyHint: false, untrustedContentHint: false },
     async execute(input) {
-      if (!allowedServices.includes(input.service) || !isWeekday(input.date) || !SLOTS.includes(input.time)) {
+      if (!availableServices.some(item => item.name === input.service) || !isWeekday(input.date) || !SLOTS.includes(input.time)) {
         throw new Error("Servicio, fecha u hora no válidos.");
       }
       const available = await getAvailableSlots(input.date);

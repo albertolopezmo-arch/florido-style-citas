@@ -48,26 +48,13 @@
     <section class="booking-card" aria-labelledby="booking-title">
       <div class="card-heading">
         <div><span>AGENDA</span><h2 id="booking-title">Reserva tu cita</h2></div>
-        <div class="price">15 €<small>por cita</small></div>
+        <div class="price" id="headline-price">Desde 15 €<small>según servicio</small></div>
       </div>
 
       <form id="booking-form" novalidate>
         <fieldset>
           <legend><span>1</span> Elige el servicio</legend>
-          <div class="service-grid">
-            <label class="service-card">
-              <input type="radio" name="service" value="Corte de pelo" checked>
-              <span class="service-icon" aria-hidden="true">✂</span>
-              <span><strong>Corte de pelo</strong><small>60 minutos · 15 €</small></span>
-              <i aria-hidden="true"></i>
-            </label>
-            <label class="service-card">
-              <input type="radio" name="service" value="Corte de pelo y barba">
-              <span class="service-icon" aria-hidden="true">♢</span>
-              <span><strong>Corte de pelo y barba</strong><small>60 minutos · 15 €</small></span>
-              <i aria-hidden="true"></i>
-            </label>
-          </div>
+          <div id="service-grid" class="service-grid"><p class="empty-state">Cargando servicios…</p></div>
         </fieldset>
 
         <fieldset>
@@ -109,7 +96,7 @@
 
         <div class="summary" id="summary">
           <div><small>TU CITA</small><strong id="summary-service">Corte de pelo</strong><span id="summary-when">Selecciona día y hora</span></div>
-          <strong>15 €</strong>
+          <strong id="summary-price">—</strong>
         </div>
         <button class="primary-button" id="submit-button" type="submit">Confirmar cita <span>→</span></button>
       </form>
